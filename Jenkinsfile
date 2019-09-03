@@ -24,6 +24,10 @@ pipeline {
                 }
             }
         }
+        stage('SonarQube analysis') {
+            def sonarqubeScannerHome = tool name: 'SonarQubeServer'
+            sh "${sonarqubeScannerHome}/bin/sonar-scanner"
+        }
         stage('Install') {
             steps {
                 sh 'mvn install'
