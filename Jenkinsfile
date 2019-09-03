@@ -11,7 +11,12 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'mvn -B -DskipTests clean package'
+                withSonarQubeEnv('My SonarQube Server') {
+                    // Optionally use a Maven environment you've configured already
+                    withMaven(maven:'Maven 3.5') {
+                        sh 'mvn -B -DskipTests clean package sonar:sonar'
+                    }
+                }
             }
         }
         stage('Test') {
@@ -23,10 +28,6 @@ pipeline {
                     junit 'target/surefire-reports/*.xml'
                 }
             }
-        }
-        stage('SonarQube analysis') {
-            def sonarqubeScannerHome = tool name: 'SonarQubeServer'
-            sh "${sonarqubeScannerHome}/bin/sonar-scanner"
         }
         stage('Install') {
             steps {
